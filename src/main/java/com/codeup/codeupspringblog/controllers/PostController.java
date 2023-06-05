@@ -17,8 +17,8 @@ public class PostController {
 
     @GetMapping("/posts/{id}")
     @ResponseBody
-    public String postsById(@PathVariable String id) {
-        return "<h1>View an " + id + " post </h1>";
+    public String postsById(@PathVariable long id) {
+        return "<h1>Viewing post with an id of:" + id + " .</h1>";
     }
 
     @GetMapping("/posts/create")
