@@ -1,65 +1,70 @@
 package com.codeup.codeupspringblog.controllers;
 
-import com.codeup.codeupspringblog.Post;
+import com.codeup.codeupspringblog.models.Post;
+import com.codeup.codeupspringblog.models.PostCategories;
+import com.codeup.codeupspringblog.models.User;
+import com.codeup.codeupspringblog.repositories.PostCategoriesRepository;
 import com.codeup.codeupspringblog.repositories.PostRepository;
+import com.codeup.codeupspringblog.repositories.UserRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
-
 @Controller
 public class PostController {
+    private final PostRepository postsDao;
+    private final UserRepository userDao;
+    private final PostCategoriesRepository catDao;
 
-    private PostRepository postsDao;
-
-    public PostController(PostRepository postsDao) {
+    public PostController(PostRepository postsDao, UserRepository userDao, PostCategoriesRepository catDao) {
         this.postsDao = postsDao;
+        this.userDao = userDao;
+        this.catDao = catDao;
     }
 
     @GetMapping("/posts")
-    public String index(Model model){
 
-        List<Post> posts = postsDao.findAll();
-        model.addAttribute("posts", posts);
-//        List<Post> posts = new ArrayList<>();
-//        Post p1 = new Post(1L, "Cats", "Cats go meow");
-//        Post p2 = new Post(2L, "Dogs", "Dogs go woof");
-//        posts.add(p1);
-//        posts.add(p2);
-//
-//        model.addAttribute("posts", posts);
-        return "/post/index";
+    public String viewPosts(Model model) {
+        model.addAttribute("posts", postsDao.findAll());
+        return "posts/index";
     }
 
-//    @GetMapping("/posts/{id}")
-//    public String specificPost(@PathVariable long id, Model model){
-//        Post p1 = new Post(1L, "Cats", "Cats go meow");
-//
-//        model.addAttribute("post", p1);
-//        return "/post/show";
-//    }
+
+    @GetMapping("/posts/{id}")
+    public String singlePost(@PathVariable long id, Model model) {
+        model.addAttribute("post", postsDao.findById(id).get());
+        return "posts/show";
+    }
+
 
     @GetMapping("/posts/create")
-    @ResponseBody
-    public String getCreate() {
-        return "<h1>View the form for creating a post</h1>";
+    public String showPostForm(Model model) {
+        // show categories in form
+        model.addAttribute("categories", catDao.findAll());
+        return "/posts/create";
     }
+
 
     @PostMapping("/posts/create")
-    @ResponseBody
-    public String postCreate() {
-        return "<h1>Create a new post </h1>";
+//    @RequestMapping(path = "/posts/create", method = RequestMethod.POST)
+    public String submitNewPost(@RequestParam (name="title")String title,
+                                @RequestParam(name="body") String body,
+                                @RequestParam(name = "category") List<Long> categoryIds) {
+        Post post = new Post(title, body);
+
+        List<PostCategories> categories = new ArrayList<>();
+
+        for(long categoryId : categoryIds) {
+            categories.add(catDao.findById(categoryId).get());
+        }
+
+        User user = userDao.findById(1L).get();
+        post.setUser(user);
+        post.setCategories(categories);
+        postsDao.save(post);
+        return "redirect:/posts";
     }
-
 }
-
-
-
-
