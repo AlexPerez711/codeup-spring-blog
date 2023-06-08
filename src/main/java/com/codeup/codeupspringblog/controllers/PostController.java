@@ -26,44 +26,54 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-
     public String viewPosts(Model model) {
         model.addAttribute("posts", postsDao.findAll());
         return "posts/index";
     }
 
-
     @GetMapping("/posts/{id}")
     public String singlePost(@PathVariable long id, Model model) {
-        model.addAttribute("post", postsDao.findById(id).get());
+        model.addAttribute("post", postsDao.findById(id).orElse(null));
         return "posts/show";
     }
 
-
     @GetMapping("/posts/create")
     public String showPostForm(Model model) {
-        // show categories in form
         model.addAttribute("categories", catDao.findAll());
+        model.addAttribute("post", new Post());
         return "/posts/create";
     }
 
+    @GetMapping("/posts/{id}/edit")
+    public String showEditPostForm(@PathVariable long id, Model model) {
+        Post existingPost = postsDao.findById(id).orElse(null);
+//        if (existingPost == null) {
+//            return "error";
+//        }
+        model.addAttribute("post", existingPost);
+        return "/posts/edit";
+    }
+
+    @PostMapping("/posts/{id}/edit")
+    public String updatePost(@PathVariable long id, @ModelAttribute Post updatedPost) {
+        Post post = postsDao.findById(id).orElse(null);
+        if (post != null) {
+            post.setTitle(updatedPost.getTitle());
+            post.setBody(updatedPost.getBody());
+            postsDao.save(post);
+        }
+        return "redirect:/posts";
+    }
+
+
 
     @PostMapping("/posts/create")
-//    @RequestMapping(path = "/posts/create", method = RequestMethod.POST)
-    public String submitNewPost(@RequestParam (name="title")String title,
-                                @RequestParam(name="body") String body,
-                                @RequestParam(name = "category") List<Long> categoryIds) {
-        Post post = new Post(title, body);
-
-        List<PostCategories> categories = new ArrayList<>();
-
-        for(long categoryId : categoryIds) {
-            categories.add(catDao.findById(categoryId).get());
+    public String submitNewPost(@ModelAttribute Post post) {
+        User user = userDao.findById(1L).orElse(null);
+        if (user == null) {
+            return "error";
         }
-
-        User user = userDao.findById(1L).get();
         post.setUser(user);
-        post.setCategories(categories);
         postsDao.save(post);
         return "redirect:/posts";
     }
