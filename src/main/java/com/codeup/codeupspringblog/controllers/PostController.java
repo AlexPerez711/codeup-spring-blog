@@ -6,6 +6,7 @@ import com.codeup.codeupspringblog.repositories.PostCategoriesRepository;
 import com.codeup.codeupspringblog.repositories.PostRepository;
 import com.codeup.codeupspringblog.repositories.UserRepository;
 import com.codeup.codeupspringblog.services.EmailService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,12 @@ public class PostController {
     @GetMapping("/posts")
 
     public String viewPosts(Model model) {
+        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println((loggedInUser.getEmail()));
+        System.out.println((loggedInUser.getId()));
+        System.out.println((loggedInUser.getUsername()));
+
+
         model.addAttribute("posts", postsDao.findAll());
         return "posts/index";
     }
@@ -52,8 +59,9 @@ public class PostController {
     @PostMapping("/posts/create")
 //    @RequestMapping(path = "/posts/create", method = RequestMethod.POST)
     public String submitNewPost(@ModelAttribute Post post) {
-        User user = userDao.findById(1L).get();
-        post.setUser(user);
+        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User user = userDao.findById(1l).get();
+        post.setUser(loggedInUser);
 
         emailService.prepareAndSend(post, "New Post Created!", post.getBody());
         postsDao.save(post);
@@ -71,8 +79,9 @@ public class PostController {
 
     @PostMapping("/posts/{id}/edit")
     public String updatePost(@ModelAttribute Post newPost) {
-        User user = userDao.findById(1L).get();
-        newPost.setUser(user);
+        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User user = userDao.findById(1L).get();
+        newPost.setUser(loggedInUser);
         postsDao.save(newPost);
         return "redirect:/posts";
     }
