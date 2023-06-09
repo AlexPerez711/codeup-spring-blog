@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Title</title>
 </head>
 <h1>Create a New Post</h1>
 
-<form th:action="@{/posts/create}" th:method="post" th:object="${post}">
+<form th:action="@{/posts/create}" th:object="${post}" th:method="post">
   <label for="title">Title: </label>
-  <input th:field="*{title}" id="title">
+  <input type="text" name="title" id="title" th:field="*{title}">
   <label for="body">Body: </label>
-  <textarea th:field="*{body}" id="body"></textarea>
+  <textarea name="body" id="body" th:field="*{body}"></textarea>
   <th:block th:each="category : ${categories}">
     <label th:text="${category.name}"></label>
-    <input th:field="*{categories}" type="checkbox" name="category" th:value="${category.id}">
+    <input type="checkbox" name="category" th:field="*{categories}" th:value="${category.id}">
   </th:block>
   <button>Create Post</button>
 </form>
