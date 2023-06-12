@@ -88,7 +88,9 @@ public class PostController {
 
     @PostMapping("/posts/{id}/delete")
     public String deletePost(@PathVariable long id) {
-        if (postsDao.existsById(id)) {
+        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Post postToDelete = postsDao.findById(id).get();
+    if (loggedInUser.getId() == postToDelete.getUser().getId()) {
             postsDao.deleteById(id);
         }
         return "redirect:/posts";
