@@ -13,13 +13,13 @@
 <h1 th:replace="partials/header :: header"></h1>
 
 
-<div sec:authorize="isAuthenticated()">
-  This content is only shown to authenticated users.
+<!--<div sec:authorize="isAuthenticated()">-->
+<!--  This content is only shown to authenticated users.-->
 
-  User ID: <span th:text="${#authentication.principal.id}"/>
-  Username: <span th:text="${#authentication.principal.username}"/>
-  Email: <span th:text="${#authentication.principal.email}"/>
-</div>
+<!--  User ID: <span th:text="${#authentication.principal.id}"/>-->
+<!--  Username: <span th:text="${#authentication.principal.username}"/>-->
+<!--  Email: <span th:text="${#authentication.principal.email}"/>-->
+<!--</div>-->
 
 <!--<th:block th:each="post: ${posts}">-->
 <!--  <li th:text="${post.title}"></li>-->
@@ -30,8 +30,8 @@
 <div th:fragment="card"  class="card" style="width: 18rem;">
 <!--  <img src="..." class="card-img-top" alt="...">-->
   <div th:block th:each="post: ${posts}" class="card-body">
-    <h5  th:text="${post.title}" class="card-title">Post title</h5>
-    <p  th:text="${post.body}" class="card-text"></p>
+    <a  th:href="@{/posts/{id} (id=${post.id})}" th:text="${post.title}"></a>
+<!--    <p  th:text="${post.body}" class="card-text"></p>-->
     <a th:href="@{/posts/{id}/edit(id=${post.id})}" class="btn btn-primary">Edit</a>
   </div>
 </div>

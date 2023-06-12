@@ -28,10 +28,10 @@ public class PostController {
     @GetMapping("/posts")
 
     public String viewPosts(Model model) {
-        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println((loggedInUser.getEmail()));
-        System.out.println((loggedInUser.getId()));
-        System.out.println((loggedInUser.getUsername()));
+//        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        System.out.println((loggedInUser.getEmail()));
+//        System.out.println((loggedInUser.getId()));
+//        System.out.println((loggedInUser.getUsername()));
 
 
         model.addAttribute("posts", postsDao.findAll());
